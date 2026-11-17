@@ -17,6 +17,8 @@ add_compile_options(-Wall -Wextra -Wpedantic)
 # txcore: everything except main(), shared with the tests
 add_library(txcore STATIC
     src/config.cpp
+    src/udp_sender.cpp
+    src/stop_signal.cpp
 )
 target_include_directories(txcore PUBLIC include)
 
