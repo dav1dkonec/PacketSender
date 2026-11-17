@@ -19,8 +19,19 @@ add_library(txcore STATIC
     src/config.cpp
     src/udp_sender.cpp
     src/stop_signal.cpp
+    src/lateness.cpp
+    src/pacer.cpp
 )
 target_include_directories(txcore PUBLIC include)
+
+# Pacer clock, sleep and real-time setup are per platform
+if(APPLE)
+    target_sources(txcore PRIVATE src/pacer_mac.cpp)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    target_sources(txcore PRIVATE src/pacer_linux.cpp)
+else()
+    set(NO_PACER ON)
+endif()
 
 # tests: run with `ctest --test-dir build`
 enable_testing()
