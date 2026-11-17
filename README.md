@@ -14,8 +14,8 @@ ctest --test-dir build
 ## Usage
 
 ```sh
-./build/udp_sender -d 10.0.0.2 -n 10000 -i 1000 -w 20 -R
-./build/udp_sender -d 10.0.0.2 -L      # receiver in packet mode (no UDP listener)
+./build/udp_sender -d 192.168.50.2 -n 10000 -i 1000 -w 20 -R
+./build/udp_sender -d 192.168.50.2 -L      # receiver in packet mode (no UDP listener)
 ```
 
 Without `-L` the sender stops when the receiver is unreachable

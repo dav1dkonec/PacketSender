@@ -10,7 +10,7 @@
 
 struct Config {
     // network
-    std::string dest = "10.0.0.2";  // receiver IPv4 address (direct cable)
+    std::string dest = "192.168.50.2";  // receiver IPv4 address (direct cable)
     uint16_t port = 5000;           // receiver UDP port
     std::string interface;          // empty = routing decides
     bool no_listener = false;       // unconnected socket: ignore ICMP port unreachable
