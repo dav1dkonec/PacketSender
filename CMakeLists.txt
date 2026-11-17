@@ -33,6 +33,13 @@ else()
     set(NO_PACER ON)
 endif()
 
+if(NOT NO_PACER)
+    add_executable(udp_sender src/main.cpp)
+    target_link_libraries(udp_sender PRIVATE txcore)
+else()
+    message(STATUS "${CMAKE_SYSTEM_NAME}: building txcore and tests only, udp_sender needs macOS or Linux")
+endif()
+
 # tests: run with `ctest --test-dir build`
 enable_testing()
 
