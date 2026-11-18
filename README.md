@@ -18,6 +18,11 @@ ctest --test-dir build
 ./build/udp_sender -d 192.168.50.2 -L      # receiver in packet mode (no UDP listener)
 ```
 
+`-s` sets the UDP payload (default 100 B: the 16 B header + padding). On
+10BASE-T the frame then takes (8 preamble + max(64, 46 + size)) x 0.8 us on the
+wire, 123.2 us for 100 B; the wire probe tells test packets from ARP (72 B,
+57.6 us) and other traffic by this length.
+
 Without `-L` the sender stops when the receiver is unreachable
 (ICMP port/host unreachable, no route).
 

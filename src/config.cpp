@@ -59,6 +59,7 @@ void print_usage(const char* prog)
         << "  -p, --port <n>          UDP port (default " << def.port << ")\n"
         << "  -I, --interface <name>  send through this interface (default: routing)\n"
         << "  -L, --no-listener       receiver in packet mode: ignore port unreachable\n"
+        << "  -s, --size <bytes>      UDP payload 16-1472, rest is padding (default " << def.size << ")\n"
         << "\nSchedule:\n"
         << "  -n, --count <n>         packets, warm-up included (default " << def.count << ")\n"
         << "  -i, --interval-us <n>   gap between packets in us (default " << def.interval_us << ")\n"
@@ -77,6 +78,7 @@ Config parse_args(int argc, char* argv[])
         {"port",        required_argument, nullptr, 'p'},
         {"interface",   required_argument, nullptr, 'I'},
         {"no-listener", no_argument,       nullptr, 'L'},
+        {"size",        required_argument, nullptr, 's'},
         {"count",       required_argument, nullptr, 'n'},
         {"interval-us", required_argument, nullptr, 'i'},
         {"jitter-us",   required_argument, nullptr, 'j'},
@@ -85,7 +87,7 @@ Config parse_args(int argc, char* argv[])
         {"help",        no_argument,       nullptr, 'h'},
         {nullptr,       0,                 nullptr, 0},
     };
-    const char* short_options = ":d:p:I:Ln:i:j:w:Rh";
+    const char* short_options = ":d:p:I:Ls:n:i:j:w:Rh";
 
     // reset getopt's global state so parse_args can run repeatedly (tests)
 #ifdef __GLIBC__
@@ -109,6 +111,10 @@ Config parse_args(int argc, char* argv[])
             break;
         case 'L':
             cfg.no_listener = true;
+            break;
+        case 's':
+            // 16 = test_packet header, 1472 = 1500 MTU - IPv4 20 - UDP 8
+            cfg.size = parse_number<uint32_t>(optarg, "--size", 16, 1472);
             break;
         case 'n':
             cfg.count = parse_number<uint32_t>(optarg, "--count", 1, 100'000'000);

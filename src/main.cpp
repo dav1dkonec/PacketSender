@@ -1,9 +1,11 @@
 // udp_sender: paced generator of LAT1 test packets for latency_rx
 
+#include <cstring>
 #include <ctime>
 #include <exception>
 #include <iomanip>
 #include <iostream>
+#include <vector>
 
 #include "config.h"
 #include "lateness.h"
@@ -36,7 +38,7 @@ int main(int argc, char* argv[])
 
     std::cout << "dest " << cfg.dest << ':' << cfg.port
               << (cfg.interface.empty() ? "" : " via " + cfg.interface)
-              << (cfg.no_listener ? ", no listener" : "") << '\n'
+              << (cfg.no_listener ? ", no listener" : "") << ", payload " << cfg.size << " B\n"
               << cfg.count << " packets (" << cfg.warmup << " warm-up), interval "
               << cfg.interval_us << " us, jitter +-" << cfg.jitter_us << " us\n";
 
@@ -56,6 +58,8 @@ int main(int argc, char* argv[])
         install_stop_handler();
         std::cout << "sending (Ctrl+C to stop)" << std::endl;
 
+        // header + zero padding, allocated once before the loop
+        std::vector<unsigned char> buf(cfg.size, 0);
         test_packet pkt{};
         pkt.magic = tp_hton32(TEST_PACKET_MAGIC);
 
@@ -67,7 +71,8 @@ int main(int argc, char* argv[])
             }
             pkt.seq = tp_hton32(seq);
             pkt.send_ns = tp_hton64(realtime_ns());
-            if (sender.send(&pkt, sizeof pkt)) {
+            std::memcpy(buf.data(), &pkt, sizeof pkt);
+            if (sender.send(buf.data(), buf.size())) {
                 ++sent;
             } else {
                 ++dropped;

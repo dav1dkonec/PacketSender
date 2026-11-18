@@ -62,6 +62,7 @@ void test_defaults()
     CHECK(c.port == def.port);
     CHECK(c.interface.empty());
     CHECK(!c.no_listener);
+    CHECK(c.size == def.size);
     CHECK(c.count == def.count);
     CHECK(c.interval_us == def.interval_us);
     CHECK(c.jitter_us == def.jitter_us);
@@ -99,6 +100,13 @@ void test_long_options()
     CHECK(c.realtime);
 }
 
+void test_size()
+{
+    CHECK(parse({"-s", "16"}).size == 16);
+    CHECK(parse({"--size", "1472"}).size == 1472);
+    CHECK(parse({"--size=200"}).size == 200);
+}
+
 void test_cross_checks()
 {
     // jitter must stay below half the interval, whatever the option order
@@ -121,6 +129,8 @@ void test_invalid_values()
     CHECK_THROWS("--interval-us", "-i", "0");
     CHECK_THROWS("invalid value '12x'", "-n", "12x");
     CHECK_THROWS("--interface", "-I", "");
+    CHECK_THROWS("--size", "-s", "15");
+    CHECK_THROWS("--size", "-s", "1473");
 }
 
 void test_bad_usage()
@@ -144,6 +154,7 @@ int main()
     test_defaults();
     test_short_options();
     test_long_options();
+    test_size();
     test_cross_checks();
     test_invalid_values();
     test_bad_usage();
